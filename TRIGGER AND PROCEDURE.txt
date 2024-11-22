@@ -1,0 +1,56 @@
+DECLARE   
+   total_rows number(2);  
+BEGIN  
+   UPDATE  employee  //TRIGGER WILL FIRE
+   SET sal = sal + 5000;  
+   IF sql%notfound THEN  
+      dbms_output.put_line('no salary updated');  
+   ELSIF sql%found THEN  
+      total_rows := sql%rowcount;  
+      dbms_output.put_line( total_rows || ' salary updated ');  
+   END IF;   
+END;  
+/  
+
+SQL> CREATE OR REPLACE TRIGGER display_salary_changes
+  2      BEFORE DELETE OR INSERT OR UPDATE ON CUSTOMERS
+  3      FOR EACH ROW
+  4      WHEN (NEW.ID > 0)
+  5      DECLARE
+  6        sal_diff number;
+  7      BEGIN
+  8        sal_diff := :NEW.salary - :OLD.salary; // HERE NEW AND OLD ARE PREDEFINED PROCEDURES
+  9        dbms_output.put_line('Old salary: ' || :OLD.salary);
+ 10       dbms_output.put_line('NEW.salary: ' || :NEW.salary);
+ 11        dbms_output.put_line('Salary Difference: ' || sal_diff);
+ 12     END;
+ 13     /
+
+Trigger created.
+
+DECLARE
+  2        total_rows number(2);
+  3      BEGIN
+  4         UPDATE customers
+  5         SET salary = salary + 5000;
+  6         IF sql%notfound THEN
+  7           dbms_output.put_line('No customer updated');
+  8         ELSIF sql%found THEN
+  9          total_rows := sql%rowcount;
+ 10          dbms_output.put_line( total_rows || ' customers updated ');
+ 11          END IF;
+ 12      END;
+ 13  /
+Old salary: 5000
+NEW.salary: 10000
+Salary Difference: 5000
+Old salary: 8000
+NEW.salary: 13000
+Salary Difference: 5000
+Old salary: 3000
+NEW.salary: 8000
+Salary Difference: 5000
+Old salary: 5000
+NEW.salary: 10000
+Salary Difference: 5000
+Old salary: 5000
